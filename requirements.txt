@@ -2,4 +2,3 @@ streamlit
 numpy
 keras
 librosa
-pickle
