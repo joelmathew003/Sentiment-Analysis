@@ -6,7 +6,7 @@ import librosa
 
 
 st.title("Sentiment Analysis from Audio")
-st.sidebar.subheader("Hi kunda")
+st.sidebar.subheader("About")
 st.sidebar.info("Aim: To give a prediction of the mood of the speaker based on the audio")
 audio = st.file_uploader("Please upload your audio in .wav format", type=["wav"])
 if audio is not None:
