@@ -17,7 +17,7 @@ if audio is not None:
     mfcc = librosa.feature.mfcc(signal, sample_rate, n_mfcc=13, n_fft=2048, hop_length=512)
     mfcc = np.asarray([np.asarray(mfcc.T)])
     #st.write(mfcc.shape)
-    loaded_model = load_model("/Users/Joel Mathew/Downloads/sentiment_analysis_model_v1.h5")
+    loaded_model = load_model("sentiment_analysis_model_v1.h5")
 
     predicted_output = np.argmax(loaded_model.predict(mfcc))
     if(predicted_output==0):
