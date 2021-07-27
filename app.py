@@ -3,13 +3,46 @@ import numpy as np
 import keras
 from keras.models import load_model
 import librosa
+import librosa.display
+import os
+import matplotlib.pyplot as plt
 
+def audio_feature_plot_mfcc(plot_name):
+    for audio_path in os.listdir("tempDir"):
+        audio_path = os.path.join("tempDir",audio_path)
+        (xf, sr) = librosa.load(audio_path)    
 
-st.title("Sentiment Analysis from Audio")
-st.sidebar.subheader("About")
-st.sidebar.info("Aim: To give a prediction of the mood of the speaker based on the audio")
-audio = st.file_uploader("Please upload your audio in .wav format", type=["wav"])
-if audio is not None:
+        if plot_name == "MFCC":
+
+            mfccs = librosa.feature.mfcc(y=xf, sr=sr, n_mfcc=4)
+            librosa.display.specshow(mfccs, x_axis='time')
+            plt.colorbar()
+            plt.title('MFCC Spectogram')
+            plt.savefig("audio_features_mfcc")
+            st.markdown("<h3 style='text-align: center; color: yellow;'> The MFCC features graph of the audio file uploaded is shown below</h1>",  unsafe_allow_html=True)
+            st.image("audio_features_mfcc.png")
+
+        elif plot_name == "Chroma":
+
+            chroma = librosa.feature.chroma_stft(y=xf,sr = sr)
+            librosa.display.specshow(chroma,x_axis='time')
+            plt.colorbar()
+            plt.title('Chroma Spectogram')
+            plt.savefig("audio_features_chroma")
+            st.markdown("<h3 style='text-align: center; color: yellow;'> The Chroma features graph of the audio file uploaded is shown below</h1>",  unsafe_allow_html=True)
+            st.image("audio_features_chroma.png")
+
+        elif plot_name == "Mel Scale":
+
+            mel = librosa.feature.melspectrogram(y=xf,sr=sr)
+            librosa.display.specshow(mel,x_axis="time")
+            plt.colorbar()
+            plt.title("Mel Spectogram")
+            plt.savefig("audio_features_mel")
+            st.markdown("<h3 style='text-align: center; color: yellow;'> The Mel features graph of the audio file uploaded is shown below</h1>",  unsafe_allow_html=True)
+            st.image("audio_features_mel.png")
+
+def model(audio):
     signal, sample_rate = librosa.load(audio)
     mfcc = librosa.feature.mfcc(signal, sample_rate, n_mfcc=13, n_fft=2048, hop_length=512)
     mfcc = np.asarray([np.asarray(mfcc.T)])
@@ -38,4 +71,39 @@ if audio is not None:
         prob["Anger"] = prediction.T[5]
         st.bar_chart(prob)
         st.table(prob)
-    
+
+st.markdown("<h1 style='text-align: center; color: yellow;'>Speech Emotion Recognition</h1>",  unsafe_allow_html=True)
+st.sidebar.subheader("About")
+st.sidebar.info("Aim: To give a prediction of the mood of the speaker based on the audio")
+     
+
+def main():
+    audio = st.file_uploader("Please upload your audio here", type=["wav","mp3"])   
+    if audio is not None:
+        with open(os.path.join("tempDir",audio.name),"wb") as f:
+            f.write(audio.getbuffer())
+
+        st.sidebar.title('Select the spectrogram to view')
+        plot_name = st.sidebar.radio("",("MFCC","Chroma","Mel Scale"))
+
+        audio_feature_plot_mfcc(plot_name)
+
+        model(audio)
+
+
+def cache():
+    number_of_files = 0
+    for f in os.listdir("tempDir"):
+        if f:
+            number_of_files += 1
+
+    if number_of_files == 0:
+        main()
+    else:
+        for f in os.listdir("tempDir"):
+            if f:
+                audio_path = os.path.join("tempDir",f)
+                os.remove(audio_path)
+        main()
+
+cache()
