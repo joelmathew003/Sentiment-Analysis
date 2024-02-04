@@ -44,7 +44,7 @@ def audio_feature_plot_mfcc(plot_name):
 
 def model(audio):
     signal, sample_rate = librosa.load(audio)
-    mfcc = librosa.feature.mfcc(signal, sample_rate, n_mfcc=13, n_fft=2048, hop_length=512)
+    mfcc = librosa.feature.mfcc(signal=signal, sample_rate=sample_rate, n_mfcc=13, n_fft=2048, hop_length=512)
     mfcc = np.asarray([np.asarray(mfcc.T)])
     loaded_model = load_model("sentiment_analysis_model_v1.h5")
     prediction = loaded_model.predict(mfcc)
